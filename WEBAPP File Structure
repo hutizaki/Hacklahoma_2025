@@ -31,5 +31,5 @@ PoGC-WebApp/
 │── test/                         
 │── package.json                   	# 📦 Dependencies & metadata
 │── README.md                      	# 📖 WebApp Overview
-│── .gitignore                        # 🚫 Version control exclusions
-│── LICENSE                           # ⚖️ Open-source license
+│── .gitignore                          # 🚫 Version control exclusions
+│── LICENSE                             # ⚖️ Open-source license
