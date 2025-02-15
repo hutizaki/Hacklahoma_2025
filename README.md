@@ -24,88 +24,116 @@
 
 ---
 ```
-PoGC-Eclipse-Plugin/
-│── src/                         			    	# 📂 Main source code
-│   ├── PluginMain.java          		           # 🎯 Entry point for Eclipse plugin
-│   ├── tracking/              		    	# 📂 Tracking & Monitoring
-│   │   ├── KeystrokeTracker.java   		# ⌨️ Logs keystrokes, pastes, and typing behavior
-│   │   ├── PasteDetector.java      		# 📋 Detects pastes & flags AI-generated code
-│   │   ├── SessionTracker.java    		# ⏳ Tracks time spent coding and active edits
-│   │   ├── AuthReplay.java        		# 🔄 Captures real-time coding playback
-│   │   ├── SessionExporter.java  		# 📤 Allows exporting session logs as JSON/CSV
-│   ├── detection/                 			# 📂 AI-Assisted Code Detection
-│   │   ├── AiChecker.java        		# 🤖 Sends history to AI API for similarity checks
-│   │   ├── CodeComplexity.java   		# 📊 Detects sudden jumps in skill level & structure
-│   │   ├── PlagiarismCheck.java     		# ⚠️ Compares against known AI-generated code
-│   ├── comments/                  		# 📂 Auto-Insert Comment System
-│   │   ├── InsertComments.java   		# 📝 Inserts Explain-Your-Code prompts above flagged code
-│   │   ├── CommentValidator.java    	# ✔️ Ensures all comments are answered before submission
-│   ├── reporting/                  			# 📂 Proof-of-Genuine-Code Report Generation
-│   │   ├── ReportGenerator.java  		# 📑 Creates final PoGC report
-│   │   ├── SessionHistory.java     		# 📜 Logs session history & coding timeline
-│   │   ├── PercentageBreakdown.java 	# 📊 Breaks down Human vs AI vs Pasted Code
-│   │   ├── BlockchainStorage.java  		# ⛓️ Stores report hash on Ethereum
-│   ├── ethereum/                    		# 📂 Ethereum & Web3 Integration
-│   │   ├── IpfsStorage.java        		# 🌐 Stores PoGC reports on IPFS/Swarm
-│   │   ├── EthereumConnector.java   	# 🔗 Handles Ethereum transactions & smart contract interaction
-│   │   ├── ENSIntegration.java     		# 🌍 Links PoGC report to ENS domain
-│   ├── storage/                     			# 📂 Local Storage for Offline Mode
-│   │   ├── LocalStorageHandler.java 	# 🗄️ Saves reports locally when offline
-│   │   ├── SyncManager.java        		# 🔄 Syncs local storage with blockchain when back online
-│   ├── ui/                         			# 📂 UI Components for Eclipse
-│   │   ├── ReportViewerPanel.java  	# 📜 Displays student reports inside Eclipse
-│   │   ├── StatusBarIndicator.java  		# ⚠️ Shows AI-detection warnings
-│   ├── logging/                     			# 📂 Debugging & Logs
-│   │   ├── Logger.java           		# 📝 Handles error reporting & logs
-│   ├── config/                    			# 📂 Configuration Files
-│   │   ├── settings.json          		# ⚙️ Plugin settings
-│   │   ├── apiKeys.json          		# 🔑 API credentials for AI-checking service
-│── test/                            			# 📂 Unit tests
-│── docs/                          			# 📂 Documentation
-│   ├── README.md              		      	# 📖 Overview & setup guide
-│   ├── API.md                    			# 🌐 AI & Ethereum integration details
-│   ├── ARCHITECTURE.md          	     	# 🏗️ Technical breakdown
-│   ├── CONTRIBUTING.md          	     	# 👥 Contribution guidelines
-│── pom.xml                       		    	# 📦 Eclipse plugin dependencies
-│── .gitignore                        		 	# 🚫 Version control exclusions
-│── LICENSE                      		      	# ⚖️ Open-source license
-```
+PoGC-VSCode-Extension/
+│── .vscode/                      # ⚙️ VS Code settings & launch configurations
+│   ├── settings.json              # VS Code-specific settings
+│   ├── extensions.json            # Recommended extensions for development
+│
+│── src/                           # 📂 Main source code
+│   ├── extension.ts               # 🎯 Entry point for VS Code extension
+│   ├── tracking/                  # 📂 Tracking & Monitoring
+│   │   ├── KeystrokeTracker.ts     # ⌨️ Logs keystrokes, pastes, and typing behavior
+│   │   ├── PasteDetector.ts        # 📋 Detects pastes & flags AI-generated code
+│   │   ├── SessionTracker.ts       # ⏳ Tracks time spent coding and session durations
+│   │   ├── AuthReplay.ts           # 🔄 Captures real-time coding playback
+│   ├── detection/                  # 📂 AI-Assisted Code Detection
+│   │   ├── AiChecker.ts            # 🤖 Calls AI API for similarity checks
+│   │   ├── CodeComplexity.ts       # 📊 Detects sudden jumps in skill level & structure
+│   │   ├── PlagiarismCheck.ts      # ⚠️ Compares against known AI-generated code
+│   ├── comments/                   # 📂 Auto-Insert Comment System
+│   │   ├── InsertComments.ts       # 📝 Inserts Explain-Your-Code prompts above flagged code
+│   │   ├── CommentValidator.ts     # ✔️ Ensures all comments are answered before submission
+│   ├── reporting/                   # 📂 Proof-of-Genuine-Code Report Generation
+│   │   ├── ReportGenerator.ts      # 📑 Creates final PoGC report (JSON format)
+│   │   ├── SessionHistory.ts       # 📜 Logs session history & coding timeline
+│   │   ├── PercentageBreakdown.ts  # 📊 Breaks down Human vs AI vs Pasted Code
+│   │   ├── BlockchainStorage.ts    # ⛓️ Stores report hash on Ethereum
+│   ├── ethereum/                    # 📂 Ethereum & Web3 Integration
+│   │   ├── SwarmStorage.ts         # 🌐 Uploads PoGC reports to Swarm
+│   │   ├── EthereumConnector.ts    # 🔗 Handles Ethereum transactions & smart contract interaction
+│   │   ├── ENSIntegration.ts       # 🌍 Links PoGC report to ENS domain
+│   ├── ui/                          # 📂 UI & WebView Components
+│   │   ├── PanelView.ts            # 🎨 VS Code WebView panel for report display
+│   │   ├── ReportViewer.ts         # 📜 Loads JSON reports in a formatted UI
+│   │   ├── AlertSystem.ts          # ⚠️ Shows popups & warnings inside VS Code
+│
+│── config/                         # 📂 Configuration Files
+│   ├── settings.json                # ⚙️ Plugin settings
+│   ├── apiKeys.json                 # 🔑 API credentials for AI-checking & Ethereum
+│
+│── tests/                           # 📂 Unit tests
+│   ├── trackingTests.ts             # ✅ Tests for Keystroke/Paste tracking
+│   ├── detectionTests.ts            # ✅ AI-detection & plagiarism tests
+│   ├── reportingTests.ts            # ✅ Report generation verification
+│
+│── webapp/                          # 🌍 Web-Based UI for Professors
+│   ├── pages/                       # 📂 Web pages
+│   │   ├── index.tsx                # 📄 Home page for accessing reports
+│   │   ├── report.tsx               # 📄 UI to display PoGC report
+│   ├── components/                   # 📂 UI components
+│   │   ├── ReportCard.tsx           # 📜 Shows report summary
+│   │   ├── Navigation.tsx           # 🧭 Sidebar & navigation
+│   ├── services/                     # 📂 Web3 & Swarm integration
+│   │   ├── fetchReport.ts            # 🔍 Fetches report from Swarm/ENS
+│   │   ├── auth.ts                   # 🔐 Handles professor authentication
+│   ├── public/                        # 📂 Static assets
+│   ├── styles/                        # 🎨 UI styles
+│
+│── docs/                            # 📂 Documentation
+│   ├── README.md                     # 📖 Overview & setup guide
+│   ├── API.md                         # 🌐 AI & Ethereum integration details
+│   ├── ARCHITECTURE.md                # 🏗️ Technical breakdown
+│   ├── CONTRIBUTING.md                # 👥 Contribution guidelines
+│
+│── package.json                      # 📦 VS Code extension dependencies
+│── tsconfig.json                      # 🔧 TypeScript compiler configuration
+│── .gitignore                         # 🚫 Version control exclusions
+│── LICENSE                            # ⚖️ Open-source license
 
+```
 ```
 PoGC-WebApp/
-│── src/                         
-│   ├── App.js                   		# 🎯 Main React App entry
-│   ├── components/               	# 📂 UI Components
-│   │   ├── SectionSelector.js    	# 📋 Step 1: Choose class section (e.g., 9:00 AM class)
-│   │   ├── AssignmentSelector.js 	# 📄 Step 2: Choose assignment (e.g., Project 1)
-│   │   ├── StudentSelector.js    	# 👤 Step 3: Choose student (e.g., Student1)
-│   │   ├── ReportViewer.js       	# 📑 Step 4: Displays selected student's JSON report
-│   │   ├── ENSLookup.js          	# 🔍 Resolves professor's ENS domain
-│   │   ├── StorageFetcher.js     	# 📥 Fetches JSON report from IPFS/Swarm
-│   ├── pages/                    
-│   │   ├── HomePage.js           	# 🏠 Landing page - Select Section
-│   │   ├── AssignmentPage.js     	# 📁 Page for selecting an assignment
-│   │   ├── StudentPage.js        	# 👤 Page for selecting a student
-│   │   ├── ReportPage.js         	# 📑 Displays final report for the selected student
-│   ├── utils/                    
-│   │   ├── ipfsFetcher.js        	# 🌍 Handles JSON retrieval from IPFS/Swarm
-│   │   ├── ensResolver.js        	# 🔗 Resolves ENS domains
-│   │   ├── formatReport.js       	# 📝 Parses JSON into a readable format
-│   ├── styles/                   
-│   │   ├── main.css              		# ✨ Global styles
-│   ├── config/                   
-│   │   ├── settings.json         	# 🔧 WebApp settings
-│   │   ├── apiKeys.json          	# 🔑 Ethereum & Swarm API credentials
-│── public/                       
-│   ├── index.html                		# 🌍 WebApp entry HTML
-│   ├── favicon.ico               		# 🔖 App icon
-│── test/                         
-│── package.json                   		# 📦 Dependencies & metadata
-│── README.md                      	# 📖 WebApp Overview
-│── .gitignore                      		# 🚫 Version control exclusions
-│── LICENSE                         		# ⚖️ Open-source license
+│── public/                          # 📂 Static assets (unchanged)
+│   ├── index.html                    # 🏠 Main HTML entry point
+│   ├── favicon.ico                    # 🎨 Branding icon
+│
+│── src/                              # 📂 Main source code
+│   ├── pages/                        # 📂 Web pages
+│   │   ├── index.tsx                 # 📄 Landing page (professors login)
+│   │   ├── report.tsx                # 📄 Displays PoGC report fetched from Swarm
+│   ├── components/                   # 📂 Reusable UI components
+│   │   ├── ReportCard.tsx            # 📜 Displays report metadata
+│   │   ├── Navigation.tsx            # 🧭 Sidebar navigation
+│   │   ├── EthereumStatus.tsx        # ⛓️ Displays Ethereum connectivity status
+│   ├── services/                     # 📂 Web3, Swarm & ENS integration
+│   │   ├── fetchReport.ts            # 🔍 Retrieves report from Swarm/ENS
+│   │   ├── auth.ts                    # 🔐 Handles professor authentication
+│   │   ├── ethereum.ts                # 🔗 Connects to Ethereum smart contract
+│   │   ├── swarm.ts                    # 📂 Uploads & retrieves reports from Swarm
+│   ├── context/                      # 📂 Global state management
+│   │   ├── AuthContext.tsx            # 🛂 Manages professor authentication state
+│   │   ├── ReportContext.tsx          # 📜 Manages report state globally
+│   ├── styles/                        # 🎨 UI Styling (Tailwind/SCSS)
+│
+│── tests/                            # 📂 Unit & Integration Tests
+│   ├── fetchReport.test.ts           # ✅ Tests Swarm report retrieval
+│   ├── ethereum.test.ts              # ✅ Ensures Ethereum transactions work
+│   ├── ui.test.ts                    # ✅ UI unit tests for components
+│
+│── config/                           # 📂 Configuration & Environment Variables
+│   ├── settings.json                  # ⚙️ WebApp settings
+│   ├── apiKeys.json                    # 🔑 API keys for Ethereum & Swarm
+│
+│── docs/                             # 📂 Documentation (unchanged)
+│   ├── README.md                      # 📖 Setup guide
+│   ├── API.md                          # 🌐 Swarm & Ethereum API details
+│   ├── ARCHITECTURE.md                 # 🏗️ System architecture breakdown
+│
+│── package.json                       # 📦 WebApp dependencies
+│── tsconfig.json                       # 🔧 TypeScript compiler configuration
+│── .gitignore                          # 🚫 Version control exclusions
+│── LICENSE                             # ⚖️ Open-source license
 ```
-
 
 ## **📌 Explanation of Components**  
 
