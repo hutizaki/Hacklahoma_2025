@@ -1,6 +1,6 @@
 PoGC-Eclipse-Plugin/
-│── src/                         		# 📂 Main source code
-│   ├── PluginMain.java          		# 🎯 Entry point for Eclipse plugin
+│── src/                         	  	# 📂 Main source code
+│   ├── PluginMain.java          	  	# 🎯 Entry point for Eclipse plugin
 │   ├── tracking/              		    # 📂 Tracking & Monitoring
 │   │   ├── KeystrokeTracker.java   	# ⌨️ Logs keystrokes, pastes, and typing behavior
 │   │   ├── PasteDetector.java      	# 📋 Detects pastes & flags AI-generated code
@@ -41,5 +41,5 @@ PoGC-Eclipse-Plugin/
 │   ├── ARCHITECTURE.md          	    # 🏗️ Technical breakdown
 │   ├── CONTRIBUTING.md          	    # 👥 Contribution guidelines
 │── pom.xml                       		# 📦 Eclipse plugin dependencies
-│── .gitignore                        	# 🚫 Version control exclusions
-│── LICENSE                      		# ⚖️ Open-source license
+│── .gitignore                        # 🚫 Version control exclusions
+│── LICENSE                      		  # ⚖️ Open-source license
