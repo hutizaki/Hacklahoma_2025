@@ -1,0 +1,45 @@
+PoGC-Eclipse-Plugin/
+│── src/                         		# 📂 Main source code
+│   ├── PluginMain.java          		# 🎯 Entry point for Eclipse plugin
+│   ├── tracking/              		    # 📂 Tracking & Monitoring
+│   │   ├── KeystrokeTracker.java   	# ⌨️ Logs keystrokes, pastes, and typing behavior
+│   │   ├── PasteDetector.java      	# 📋 Detects pastes & flags AI-generated code
+│   │   ├── SessionTracker.java    		# ⏳ Tracks time spent coding and active edits
+│   │   ├── AuthReplay.java        		# 🔄 Captures real-time coding playback
+│   │   ├── SessionExporter.java  		# 📤 Allows exporting session logs as JSON/CSV
+│   ├── detection/                 		# 📂 AI-Assisted Code Detection
+│   │   ├── AiChecker.java        		# 🤖 Sends history to AI API for similarity checks
+│   │   ├── CodeComplexity.java   		# 📊 Detects sudden jumps in skill level & structure
+│   │   ├── PlagiarismCheck.java     	# ⚠️ Compares against known AI-generated code
+│   ├── comments/                  		# 📂 Auto-Insert Comment System
+│   │   ├── InsertComments.java   		# 📝 Inserts Explain-Your-Code prompts above flagged code
+│   │   ├── CommentValidator.java    	# ✔️ Ensures all comments are answered before submission
+│   ├── reporting/                  	# 📂 Proof-of-Genuine-Code Report Generation
+│   │   ├── ReportGenerator.java  		# 📑 Creates final PoGC report
+│   │   ├── SessionHistory.java     	# 📜 Logs session history & coding timeline
+│   │   ├── PercentageBreakdown.java 	# 📊 Breaks down Human vs AI vs Pasted Code
+│   │   ├── BlockchainStorage.java  	# ⛓️ Stores report hash on Ethereum
+│   ├── ethereum/                    	# 📂 Ethereum & Web3 Integration
+│   │   ├── IpfsStorage.java        	# 🌐 Stores PoGC reports on IPFS/Swarm
+│   │   ├── EthereumConnector.java   	# 🔗 Handles Ethereum transactions & smart contract interaction
+│   │   ├── ENSIntegration.java     	# 🌍 Links PoGC report to ENS domain
+│   ├── storage/                     	# 📂 Local Storage for Offline Mode
+│   │   ├── LocalStorageHandler.java 	# 🗄️ Saves reports locally when offline
+│   │   ├── SyncManager.java        	# 🔄 Syncs local storage with blockchain when back online
+│   ├── ui/                         	# 📂 UI Components for Eclipse
+│   │   ├── ReportViewerPanel.java  	# 📜 Displays student reports inside Eclipse
+│   │   ├── StatusBarIndicator.java  	# ⚠️ Shows AI-detection warnings
+│   ├── logging/                     	# 📂 Debugging & Logs
+│   │   ├── Logger.java           		# 📝 Handles error reporting & logs
+│   ├── config/                    		# 📂 Configuration Files
+│   │   ├── settings.json          		# ⚙️ Plugin settings
+│   │   ├── apiKeys.json          		# 🔑 API credentials for AI-checking service
+│── test/                            	# 📂 Unit tests
+│── docs/                          		# 📂 Documentation
+│   ├── README.md              		    # 📖 Overview & setup guide
+│   ├── API.md                    		# 🌐 AI & Ethereum integration details
+│   ├── ARCHITECTURE.md          	    # 🏗️ Technical breakdown
+│   ├── CONTRIBUTING.md          	    # 👥 Contribution guidelines
+│── pom.xml                       		# 📦 Eclipse plugin dependencies
+│── .gitignore                        	# 🚫 Version control exclusions
+│── LICENSE                      		# ⚖️ Open-source license

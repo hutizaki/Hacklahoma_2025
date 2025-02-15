@@ -3,7 +3,7 @@ Repo for Solo Hacking at Hacklahoma 2025
 
 PoGC-WebApp/
 │── src/                         
-│   ├── App.js                   		# 🎯 Main React App entry
+│   ├── App.js                   	# 🎯 Main React App entry
 │   ├── components/               	# 📂 UI Components
 │   │   ├── SectionSelector.js    	# 📋 Step 1: Choose a class section (e.g., 9:00 AM class)
 │   │   ├── AssignmentSelector.js 	# 📄 Step 2: Choose an assignment (e.g., Project 1)
