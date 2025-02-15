@@ -1,0 +1,35 @@
+# Hacklahoma_2025
+Repo for Solo Hacking at Hacklahoma 2025
+
+PoGC-WebApp/
+│── src/                         
+│   ├── App.js                   		# 🎯 Main React App entry
+│   ├── components/               	# 📂 UI Components
+│   │   ├── SectionSelector.js    	# 📋 Step 1: Choose a class section (e.g., 9:00 AM class)
+│   │   ├── AssignmentSelector.js 	# 📄 Step 2: Choose an assignment (e.g., Project 1)
+│   │   ├── StudentSelector.js    	# 👤 Step 3: Choose student (e.g., Student1)
+│   │   ├── ReportViewer.js       	# 📑 Step 4: Displays selected student's JSON report
+│   │   ├── ENSLookup.js          	# 🔍 Resolves professor's ENS domain
+│   │   ├── StorageFetcher.js     	# 📥 Fetches JSON report from IPFS/Swarm
+│   ├── pages/                    
+│   │   ├── HomePage.js           	# 🏠 Landing page - Select Section
+│   │   ├── AssignmentPage.js     	# 📁 Page for selecting an assignment
+│   │   ├── StudentPage.js        	# 👤 Page for selecting a student
+│   │   ├── ReportPage.js         	# 📑 Displays final report for the selected student
+│   ├── utils/                    
+│   │   ├── ipfsFetcher.js        	# 🌍 Handles JSON retrieval from IPFS/Swarm
+│   │   ├── ensResolver.js        	# 🔗 Resolves ENS domains
+│   │   ├── formatReport.js       	# 📝 Parses JSON into a readable format
+│   ├── styles/                   
+│   │   ├── main.css              	# ✨ Global styles
+│   ├── config/                   
+│   │   ├── settings.json         	# 🔧 WebApp settings
+│   │   ├── apiKeys.json          	# 🔑 Ethereum & Swarm API credentials
+│── public/                       
+│   ├── index.html                	# 🌍 WebApp entry HTML
+│   ├── favicon.ico               	# 🔖 App icon
+│── test/                         
+│── package.json                   	# 📦 Dependencies & metadata
+│── README.md                      	# 📖 WebApp Overview
+│── .gitignore                      # 🚫 Version control exclusions
+│── LICENSE                         # ⚖️ Open-source license
