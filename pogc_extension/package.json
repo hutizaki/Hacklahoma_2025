@@ -1,64 +1,82 @@
 {
-    "name": "pogc-extension-minimal",
-    "displayName": "PoGC Extension Minimal",
-    "version": "0.0.1",
-    "description": "A minimal VS Code extension for testing logging, activation, and a toggling start/stop button.",
-    "main": "./out/extension.js",
-    "scripts": {
-      "compile": "tsc",
-      "watch": "tsc --watch"
-    },
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/yourusername/pogc-extension-minimal.git"
-    },
-    "keywords": [
-      "vscode",
-      "extension",
-      "pogc"
+  "name": "pogc-extension-minimal",
+  "displayName": "PoGC Extension Minimal",
+  "version": "0.0.1",
+  "description": "A minimal VS Code extension for testing logging, activation, and a toggling start/stop/upload button.",
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/pogc-extension-minimal.git"
+  },
+  "keywords": [
+    "vscode",
+    "extension",
+    "pogc"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "activationEvents": [
+    "onCommand:pogc.start",
+    "onCommand:pogc.stop",
+    "onCommand:pogc.upload"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "pogc.start",
+        "title": "Start Recording"
+      },
+      {
+        "command": "pogc.stop",
+        "title": "Stop Recording"
+      },
+      {
+        "command": "pogc.upload",
+        "title": "Upload Recording"
+      }
     ],
-    "author": "Your Name",
-    "license": "MIT",
-    "engines": {
-      "vscode": "^1.70.0"
-    },
-    "activationEvents": [
-      "onCommand:pogc.start",
-      "onCommand:pogc.stop"
-    ],
-    "categories": [
-      "Other"
-    ],
-    "contributes": {
-      "commands": [
+    "menus": {
+      "editor/title": [
         {
           "command": "pogc.start",
-          "title": "Start Recording"
+          "group": "navigation",
+          "when": "!pogc.active",
+          "icon": "$(triangle-right)"
         },
         {
           "command": "pogc.stop",
-          "title": "Stop Recording"
+          "group": "navigation",
+          "when": "pogc.active",
+          "icon": "$(debug-stop)"
+        },
+        {
+          "command": "pogc.upload",
+          "group": "navigation",
+          "icon": "$(cloud-upload)"
         }
-      ],
-      "menus": {
-        "editor/title": [
-          {
-            "command": "pogc.start",
-            "group": "navigation",
-            "when": "!pogc.active"
-          },
-          {
-            "command": "pogc.stop",
-            "group": "navigation",
-            "when": "pogc.active"
-          }
-        ]
-      }
-    },
-    "devDependencies": {
-      "@types/node": "^18.0.0",
-      "@types/vscode": "^1.97.0",
-      "typescript": "^5.7.3"
+      ]
     }
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.97.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "eth-ens-namehash": "^2.0.8",
+    "ethers": "^6.13.5",
+    "ts-node": "^10.9.2"
   }
-  
+}
