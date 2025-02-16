@@ -1,28 +1,9 @@
-### **Proof-of-Genuine-Code (PoGC) - Full Project Documentation**  
+# Proof-of-Genuine-Code (PoGC) - README
 
----
+## 🚀 Project Summary
+Proof-of-Genuine-Code (PoGC) is a **VS Code & Eclipse extension** that prevents AI-assisted cheating by tracking code authorship, detecting AI-generated content, and requiring justifications for flagged sections. The plugin integrates **Ethereum for decentralized verification** and provides a **web-based dashboard** for professors to review reports.
 
-## **📌 What the Program Does & Tools Used**  
-
-**PoGC (Proof-of-Genuine-Code)** is an **AI-resistant coding verification system** designed for **academic integrity and professional use**. It prevents students from **using AI-generated code dishonestly** while providing **tamper-proof proof of effort** using **Ethereum-based decentralization**.
-
-**🔹 Key Features:**  
-✅ Tracks **keystrokes & paste events** to detect AI-generated code  
-✅ Forces students to **justify flagged code sections** with inline comments  
-✅ Stores coding session **history on IPFS/Swarm**  
-✅ Uses **ENS (Ethereum Name Service)** for student report lookup  
-✅ Generates **tamper-proof reports stored on Ethereum blockchain**  
-✅ Provides **a web-based UI for professors** to navigate & review reports  
-
-**🛠️ Tools & APIs Used:**  
-- **Eclipse Plugin Development API** – To integrate tracking & UI within Eclipse  
-- **React + Web3.js** – For WebApp navigation & Ethereum interactions  
-- **IPFS/Swarm** – Decentralized storage of PoGC reports  
-- **Ethereum Smart Contracts** – Verification of report authenticity  
-- **ENS (Ethereum Name Service)** – Student identity linking  
-- **AI-Detection API** – Checks pasted code similarity with AI-generated content  
-
----
+## 📁 Project File Structure
 ```
 PoGC-VSCode-Extension/
 │── .vscode/                      # ⚙️ VS Code settings & launch configurations
@@ -135,98 +116,77 @@ PoGC-WebApp/
 │── LICENSE                             # ⚖️ Open-source license
 ```
 
-## **📌 Explanation of Components**  
+### **PoGC Web Application**
+📍 **Directory:** `PoGC-WebApp/`
+| Component        | Description |
+|-----------------|-------------|
+| `public/`       | Static assets (index.html, favicon) |
+| `src/pages/`    | Web pages (landing, report display) |
+| `src/components/` | Reusable UI elements (Navigation, ReportCard) |
+| `src/services/`  | Web3, Swarm & ENS integrations (fetch reports, auth, Ethereum) |
+| `src/context/`  | Global state management (AuthContext, ReportContext) |
+| `tests/`        | Unit & integration tests (fetchReport, Ethereum) |
+| `config/`       | API keys & web app settings |
+| `docs/`         | Documentation (README, API, ARCHITECTURE) |
+| `package.json`  | Dependencies |
+| `.gitignore`    | Version control exclusions |
 
-| **Component** | **Description** |
-|--------------|----------------|
-| **PoGC Eclipse Plugin** | A plugin that runs inside Eclipse, tracking coding behavior and preventing AI-assisted cheating. |
-| **Keystroke & Paste Tracking** | Logs typing behavior, detects large pastes, and flags AI-assisted coding. |
-| **AI Detection & Code Complexity Analysis** | Identifies AI-like code patterns, ensuring students manually write their code. |
-| **Explain-Your-Code Auto-Comments** | Inserts inline comments where AI is detected, requiring students to justify their approach. |
-| **Offline Mode & Syncing** | Stores tracking logs locally, then syncs them to Ethereum once back online. |
-| **Blockchain & ENS Integration** | Links reports to a student's ENS domain and stores report hashes for verification. |
-| **PoGC WebApp UI** | A professor-facing dashboard that retrieves reports from IPFS/Swarm and Ethereum. |
-| **Report Navigation** | Allows professors to browse by class section, assignment, and student before viewing reports. |
-| **Report Viewer** | Displays JSON-based reports in a structured, readable format. |
+### **PoGC VS Code Extension**
+📍 **Directory:** `PoGC-VSCode-Extension/`
+| Component        | Description |
+|-----------------|-------------|
+| `.vscode/`       | VS Code settings & extensions |
+| `src/extension.ts` | Main entry point for the VS Code plugin |
+| `src/tracking/`  | Keystroke, paste, session tracking |
+| `src/detection/` | AI-generated code detection (AI API, complexity analysis) |
+| `src/comments/`  | Auto-insert explain-your-code prompts |
+| `src/reporting/` | PoGC report generation (JSON, session history) |
+| `src/ethereum/`  | Swarm & Ethereum integration |
+| `src/ui/`       | VS Code WebView for report display |
+| `tests/`        | Unit tests (tracking, AI detection, reporting) |
+| `docs/`         | Project documentation (README, API, ARCHITECTURE) |
 
----
+## 🔧 Development Roadmap
 
-## **📌 Step-by-Step Development Plan**  
+To ensure **seamless implementation**, we prioritize components as follows:
 
-The following guide outlines **what needs to be coded first** to ensure proper functionality from the start.  
+### **Primary Components (Critical for MVP)**
+1. **Keystroke & Paste Tracking** (`KeystrokeTracker.ts`, `PasteDetector.ts`) - Logs user edits.
+2. **AI-Assisted Code Detection** (`AiChecker.ts`, `CodeComplexity.ts`, `PlagiarismCheck.ts`) - Flags AI-generated code.
+3. **Explain-Your-Code Prompts** (`InsertComments.ts`) - Forces inline justifications for flagged code.
+4. **PoGC Report Generation** (`ReportGenerator.ts`, `PercentageBreakdown.ts`) - Summarizes flagged content.
+5. **WebApp Report Retrieval** (`fetchReport.ts`, `Auth.ts`, `Ethereum.ts`) - Displays reports for professors.
 
-### **🔹 Phase 1: Core Tracking & Detection (🚀 Highest Priority)**
-✅ **Build the Eclipse Plugin Base (`PluginMain.java`)**  
-   - Set up **Eclipse extension hooks** and configuration management.  
+### **Secondary Components (Enhancements & Stability)**
+6. **Session Playback** (`AuthReplay.ts`) - Allows professors to replay a student’s coding session.
+7. **Ethereum & Swarm Storage** (`SwarmStorage.ts`, `BlockchainStorage.ts`) - Stores proof of authorship.
+8. **VS Code UI Panel** (`PanelView.ts`, `ReportViewer.ts`) - Displays PoGC reports inside VS Code.
+9. **Professor Authentication** (`AuthContext.tsx`) - Ensures only professors can access reports.
+10. **Time Tracking & Report Logs** (`SessionTracker.ts`, `SessionHistory.ts`) - Records total time spent coding.
 
-✅ **Implement Keystroke & Paste Tracking (`KeystrokeTracker.java`, `PasteDetector.java`)**  
-   - Capture **keyboard inputs and paste events**.  
-   - Store data in **local logs** for later AI verification.  
+## ✅ Testing & Validation
+To ensure each component functions correctly, the following tests should be performed:
 
-✅ **Develop Session Tracking (`SessionTracker.java`)**  
-   - Track **total time coding, activity periods, and inactivity gaps**.  
-   - Allow **exporting logs** to JSON/CSV.  
+### **Tracking & Detection Tests**
+| Test Case | Expected Outcome |
+|-----------|-----------------|
+| Type code & check tracking logs | KeystrokeTracker.ts records every edit |
+| Paste AI-generated content | PasteDetector.ts flags the section |
+| Modify complex code suddenly | CodeComplexity.ts triggers AI detection |
 
----
+### **WebApp & Report Validation**
+| Test Case | Expected Outcome |
+|-----------|-----------------|
+| Submit flagged code without comments | Explain-Your-Code prompt appears |
+| Fetch PoGC report from Swarm | Report displays in the WebApp |
+| Verify report authenticity on Ethereum | Report hash is stored & retrievable |
 
-### **🔹 Phase 2: AI Detection & Justification (🏗️ AI & Comment System)**
-✅ **Implement AI-Detection API Connection (`AiChecker.java`)**  
-   - Send **code snippets** to AI-checking API.  
-   - Retrieve **AI-likelihood percentage** and flag code accordingly.  
-
-✅ **Auto-Insert "Explain Your Code" Comments (`InsertComments.java`)**  
-   - **Highlight flagged AI-generated sections**.  
-   - Insert **comment prompts forcing student justification**.  
-
-✅ **Block Submissions Without Justification (`CommentValidator.java`)**  
-   - Prevent students from **submitting code with unanswered AI-flagged comments**.  
-
----
-
-### **🔹 Phase 3: Report Generation & Offline Mode (📜 Proof & Storage)**
-✅ **Generate PoGC Reports (`ReportGenerator.java`, `SessionHistory.java`)**  
-   - Compile **keystroke data, AI-detection results, and student justifications**.  
-
-✅ **Develop Local Storage (`LocalStorageHandler.java`, `SyncManager.java`)**  
-   - **Save reports locally** when offline.  
-   - **Sync reports to IPFS/Swarm** once online.  
-
-✅ **Implement Blockchain & ENS Integration (`EthereumConnector.java`, `ENSIntegration.java`)**  
-   - Store **PoGC report hashes** on Ethereum.  
-   - Link reports to **ENS student domains** for easy retrieval.  
-
----
-
-### **🔹 Phase 4: WebApp UI & Report Viewing (🎨 Final Phase)**
-✅ **Develop Section & Assignment Selection (`SectionSelector.js`, `AssignmentSelector.js`)**  
-   - Allow professors to **navigate class sections before viewing reports**.  
-
-✅ **Integrate ENS & IPFS Fetching (`ENSLookup.js`, `StorageFetcher.js`)**  
-   - Retrieve student reports **using ENS names & IPFS storage**.  
-
-✅ **Implement JSON Report Viewer (`ReportViewer.js`)**  
-   - Format and display **fetched PoGC reports** for professors.  
-
-✅ **Finalize UI Styling & Debugging (`main.css`)**  
-   - Ensure **intuitive navigation & readability**.  
+### **Integration & Performance Testing**
+| Test Case | Expected Outcome |
+|-----------|-----------------|
+| Run the plugin in VS Code | PoGC tracking & reporting functions correctly |
+| Load multiple reports at once | WebApp loads efficiently without crashes |
+| Blockchain storage of reports | Reports are correctly stored & retrieved |
 
 ---
 
-## **📌 Testing & Debugging Guide**  
-
-If a **component fails**, follow these **debugging steps**:  
-
-| **Issue** | **Potential Cause** | **How to Fix It** |
-|-----------|--------------------|------------------|
-| 🚨 **Plugin Not Loading in Eclipse** | Incorrect Eclipse plugin configuration | Ensure the `PluginMain.java` correctly registers with Eclipse’s extension system. |
-| 🚨 **Keystrokes & Pasting Not Being Logged** | Tracking methods not properly hooked | Add debug logs inside `KeystrokeTracker.java` and `PasteDetector.java`. |
-| 🚨 **AI Detection Failing** | API not responding | Check `AiChecker.java` for API errors and verify API key. |
-| 🚨 **Explain-Your-Code Comments Not Inserting** | Comment insertion logic not triggering | Ensure `InsertComments.java` receives AI-flagged sections and adds comments properly. |
-| 🚨 **Submissions Not Blocking for Unanswered Comments** | Validation not enforced | Add `console.log` checks in `CommentValidator.java` to verify flagged comments are detected. |
-| 🚨 **Reports Not Syncing to IPFS/Swarm** | Network issue or incorrect storage setup | Run `SyncManager.java` manually and check for failed network requests. |
-| 🚨 **ENS Name Not Resolving** | Incorrect ENS domain setup | Debug `ENSLookup.js` and verify ENS registration on Ethereum. |
-| 🚨 **WebApp Not Fetching Reports** | UI not correctly querying IPFS | Ensure `StorageFetcher.js` sends the correct ENS name and fetches from IPFS. |
-
----
-
-🔥 **Now you’re ready to build, test, and deploy the Proof-of-Genuine-Code system!** 🚀
