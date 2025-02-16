@@ -1,20 +1,16 @@
+// src/extension.ts
 import * as vscode from 'vscode';
-import { ChangeTracker } from './tracking/ChangeTracker';
-
-let changeTracker: ChangeTracker | undefined;
+import { DetailedChangeTracker } from './tracking/DetailedChangeTracker';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('PoGC Extension Activated');
+  console.log("Extension activated with DetailedChangeTracker!");
+  vscode.window.showInformationMessage("PoGC Extension Activated!");
 
-  changeTracker = new ChangeTracker();
+  // Instantiate the detailed change tracker to capture every editing action.
+  const changeTracker = new DetailedChangeTracker();
   context.subscriptions.push(changeTracker);
 }
-// Flagged method: Answer below why you chose recur
-// 
+
 export function deactivate() {
-  console.log('PoGC Extension Deactivated');
-  
-  if (changeTracker) {
-    changeTracker.dispose();
-  }
+  console.log("Extension deactivated.");
 }

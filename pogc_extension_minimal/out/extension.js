@@ -2,19 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
-const ChangeTracker_1 = require("./tracking/ChangeTracker");
-let changeTracker;
+// src/extension.ts
+const vscode = require("vscode");
+const DetailedChangeTracker_1 = require("./tracking/DetailedChangeTracker");
 function activate(context) {
-    console.log('PoGC Extension Activated');
-    changeTracker = new ChangeTracker_1.ChangeTracker();
+    console.log("Extension activated with DetailedChangeTracker!");
+    vscode.window.showInformationMessage("PoGC Extension Activated!");
+    // Instantiate the detailed change tracker to capture every editing action.
+    const changeTracker = new DetailedChangeTracker_1.DetailedChangeTracker();
     context.subscriptions.push(changeTracker);
 }
-// Flagged method: Answer below why you chose recur
-// 
 function deactivate() {
-    console.log('PoGC Extension Deactivated');
-    if (changeTracker) {
-        changeTracker.dispose();
-    }
+    console.log("Extension deactivated.");
 }
 //# sourceMappingURL=extension.js.map
