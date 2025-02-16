@@ -1,0 +1,36 @@
+{
+    "name": "pogc-extension-minimal",
+    "displayName": "PoGC Extension Minimal",
+    "version": "0.0.1",
+    "description": "A minimal VS Code extension for testing logging and activation.",
+    "main": "./out/extension.js",
+    "scripts": {
+        "compile": "tsc",
+        "watch": "tsc --watch"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/pogc-extension-minimal.git"
+    },
+    "keywords": [
+        "vscode",
+        "extension",
+        "pogc"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.70.0"
+    },
+    "activationEvents": [
+        "*"
+    ],
+    "categories": [
+        "Other"
+    ],
+    "devDependencies": {
+        "@types/node": "^18.0.0",
+        "@types/vscode": "^1.97.0",
+        "typescript": "^5.7.3"
+    }
+}

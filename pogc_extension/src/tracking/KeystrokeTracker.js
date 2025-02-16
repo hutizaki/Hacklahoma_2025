@@ -41,18 +41,15 @@ class KeystrokeTracker {
         this.initialize();
     }
     initialize() {
-        // Listen for text document changes
+        // Listen for text document changes and log details
         const disposable = vscode.workspace.onDidChangeTextDocument((event) => {
-            // Log the file name whenever it changes
             console.log(`Document ${event.document.fileName} was edited.`);
-            // If you want more detail, log the text that was inserted/changed
             event.contentChanges.forEach((change) => {
-                console.log(`Inserted text: "${change.text}" at ${change.range}`);
+                console.log(`Inserted text: "${change.text}" at line ${change.range.start.line}, character ${change.range.start.character}`);
             });
         });
         this.disposables.push(disposable);
     }
-    // Dispose resources when the tracker is no longer needed
     dispose() {
         this.disposables.forEach(d => d.dispose());
     }

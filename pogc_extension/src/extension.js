@@ -37,20 +37,38 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const KeystrokeTracker_1 = require("./tracking/KeystrokeTracker");
+const PasteDetector_1 = require("./detection/PasteDetector");
+const AiChecker_1 = require("./detection/AiChecker");
+const InsertComments_1 = require("./comments/InsertComments");
 let keystrokeTracker;
+let pasteDetector;
+let aiChecker;
+let insertComments;
 function activate(context) {
+    console.log("Extension activated!");
     vscode.window.showInformationMessage('PoGC Extension Activated!');
-    // Initialize the keystroke tracker
+    const outputChannel = vscode.window.createOutputChannel("PoGC Logs");
+    outputChannel.appendLine("Extension activated!");
+    // You could pass outputChannel to your trackers and call outputChannel.appendLine() there.
+    // Initialize the modules and assign them to the outer variables
     keystrokeTracker = new KeystrokeTracker_1.KeystrokeTracker();
-    context.subscriptions.push(keystrokeTracker);
-    // Register a command to verify tracking is running
-    let disposable = vscode.commands.registerCommand('pogc.checkTracking', () => {
-        vscode.window.showInformationMessage('Keystroke tracking is active!');
+    pasteDetector = new PasteDetector_1.PasteDetector();
+    aiChecker = new AiChecker_1.AiChecker();
+    insertComments = new InsertComments_1.InsertComments();
+    context.subscriptions.push(keystrokeTracker, pasteDetector, aiChecker, insertComments);
+    // Example command registration
+    let disposable = vscode.commands.registerCommand('pogc.showReport', () => {
+        vscode.window.showInformationMessage('Report feature coming soon!');
     });
     context.subscriptions.push(disposable);
 }
 function deactivate() {
-    if (keystrokeTracker) {
+    if (keystrokeTracker)
         keystrokeTracker.dispose();
-    }
+    if (pasteDetector)
+        pasteDetector.dispose();
+    if (aiChecker)
+        aiChecker.dispose();
+    if (insertComments)
+        insertComments.dispose();
 }
