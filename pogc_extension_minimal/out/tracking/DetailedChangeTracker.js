@@ -6,86 +6,100 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 class DetailedChangeTracker {
-    constructor() {
+    // The constructor now accepts a storage base path (i.e. the workspace root).
+    constructor(storageBasePath) {
+        this.storageBasePath = storageBasePath;
         this.disposables = [];
-        this.logBuffer = [];
+        // Maintain a log buffer per document (keyed by document URI).
+        this.logBuffers = new Map();
         // Cache report file paths per document.
         this.reportFilePaths = new Map();
-        // Track whether an INITIAL event has been logged for a document.
-        this.initialLogged = new Map();
+        // Track the last selection string per document to avoid duplicate logging.
+        this.lastSelections = new Map();
+        this.recordingFolderPath = this.getRecordingFolder();
         this.initialize();
     }
-    // Helper: Determine the next report file path for a document.
-    getReportFilePath(document) {
-        const docKey = document.uri.toString();
-        if (this.reportFilePaths.has(docKey)) {
-            return this.reportFilePaths.get(docKey);
-        }
-        const fileDir = path.dirname(document.fileName);
-        const baseName = path.basename(document.fileName, path.extname(document.fileName));
-        let maxSession = 0;
+    // Create (or get the next) Recording folder within the provided storage base path.
+    getRecordingFolder() {
+        const basePath = this.storageBasePath;
+        let maxRecording = 0;
         try {
-            const files = fs.readdirSync(fileDir);
-            const regex = new RegExp(`^${baseName}_report(\\d+)\\.json$`);
-            files.forEach(file => {
-                const match = file.match(regex);
-                if (match && match[1]) {
-                    const num = parseInt(match[1]);
-                    if (num > maxSession) {
-                        maxSession = num;
+            const entries = fs.readdirSync(basePath, { withFileTypes: true });
+            entries.forEach(entry => {
+                if (entry.isDirectory() && /^Recording\d+$/.test(entry.name)) {
+                    const num = parseInt(entry.name.replace('Recording', ''));
+                    if (num > maxRecording) {
+                        maxRecording = num;
                     }
                 }
             });
         }
         catch (err) {
-            console.error("Error reading directory:", err);
+            console.error("Error reading base directory for recording folder:", err);
         }
-        const nextSession = maxSession + 1;
-        const reportFileName = `${baseName}_report${nextSession}.json`;
-        const reportFilePath = path.join(fileDir, reportFileName);
+        const nextRecording = maxRecording + 1;
+        const folderName = `Recording${nextRecording}`;
+        const folderPath = path.join(basePath, folderName);
+        if (!fs.existsSync(folderPath)) {
+            try {
+                fs.mkdirSync(folderPath);
+            }
+            catch (err) {
+                console.error("Failed to create recording folder:", err);
+            }
+        }
+        return folderPath;
+    }
+    // Get the report file path for a given document.
+    getReportFilePath(document) {
+        const docKey = document.uri.toString();
+        if (this.reportFilePaths.has(docKey)) {
+            return this.reportFilePaths.get(docKey);
+        }
+        // Use the recording folder for storing the report.
+        const basePath = this.recordingFolderPath;
+        const fileName = path.basename(document.fileName); // e.g., game.py
+        const reportFileName = `${fileName}.json`; // becomes game.py.json
+        const reportFilePath = path.join(basePath, reportFileName);
         this.reportFilePaths.set(docKey, reportFilePath);
         return reportFilePath;
+    }
+    // Ensure that a log buffer exists for the document.
+    // If this is the first time, log the INITIAL event and generate its report file path.
+    ensureBuffer(document) {
+        var _a;
+        const docKey = document.uri.toString();
+        if (!this.logBuffers.has(docKey)) {
+            this.logBuffers.set(docKey, []);
+            // Generate and cache the report file path for this document.
+            this.getReportFilePath(document);
+            // Log INITIAL event for this document on first modification.
+            const timestamp = new Date().toISOString();
+            const lines = document.getText().split(/\r?\n/);
+            const structuredLines = lines.map((line, idx) => ({
+                line: idx,
+                range: `${idx}:0-${idx}:${line.length}`,
+                content: line
+            }));
+            const initialEvent = {
+                timestamp,
+                event: "INITIAL",
+                initialContent: structuredLines
+            };
+            (_a = this.logBuffers.get(docKey)) === null || _a === void 0 ? void 0 : _a.push(initialEvent);
+        }
     }
     // Helper: Format a range as "startLine:startCol-endLine:endCol"
     formatRange(range) {
         return `${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
     }
-    // Helper: Log an INITIAL event for a document.
-    logInitial(document) {
-        const docKey = document.uri.toString();
-        if (this.initialLogged.get(docKey))
-            return;
-        const timestamp = new Date().toISOString();
-        const lines = document.getText().split(/\r?\n/);
-        const structuredLines = lines.map((line, idx) => {
-            return {
-                line: idx,
-                range: `${idx}:0-${idx}:${line.length}`,
-                content: line
-            };
-        });
-        const initialEvent = {
-            timestamp,
-            event: "INITIAL",
-            initialContent: structuredLines
-        };
-        console.log("INITIAL EVENT: " + JSON.stringify(initialEvent));
-        this.logBuffer.push(initialEvent);
-        this.initialLogged.set(docKey, true);
-    }
     initialize() {
-        // Log INITIAL for documents as they open.
-        const openDisposable = vscode.workspace.onDidOpenTextDocument((document) => {
-            this.logInitial(document);
-        });
-        this.disposables.push(openDisposable);
-        // For already open documents.
-        vscode.workspace.textDocuments.forEach(document => {
-            this.logInitial(document);
-        });
         // Listen for text document changes.
         const docChangeDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
             const document = event.document;
+            this.ensureBuffer(document);
+            const docKey = document.uri.toString();
+            const buffer = this.logBuffers.get(docKey);
             const timestamp = new Date().toISOString();
             event.contentChanges.forEach(change => {
                 let logEvent = null;
@@ -122,7 +136,7 @@ class DetailedChangeTracker {
                 }
                 if (logEvent) {
                     console.log(JSON.stringify(logEvent));
-                    this.logBuffer.push(logEvent);
+                    buffer.push(logEvent);
                 }
             });
         });
@@ -130,22 +144,37 @@ class DetailedChangeTracker {
         // Listen for selection (cursor) changes.
         const selectionDisposable = vscode.window.onDidChangeTextEditorSelection((event) => {
             const document = event.textEditor.document;
+            this.ensureBuffer(document);
+            const docKey = document.uri.toString();
+            const buffer = this.logBuffers.get(docKey);
             const timestamp = new Date().toISOString();
             const selections = event.selections
                 .map(sel => `${sel.start.line}:${sel.start.character}-${sel.end.line}:${sel.end.character}`)
                 .join(",");
+            // Skip duplicate selection events for the same document.
+            if (this.lastSelections.get(docKey) === selections) {
+                return;
+            }
+            this.lastSelections.set(docKey, selections);
             const logEvent = {
                 timestamp,
                 event: "SELECTION",
                 selection: selections
             };
             console.log(JSON.stringify(logEvent));
-            this.logBuffer.push(logEvent);
+            buffer.push(logEvent);
         });
         this.disposables.push(selectionDisposable);
         // Listen for command execution events (UNDO, REDO, CUT) if available.
         if (typeof vscode.commands.onDidExecuteCommand === 'function') {
             const commandDisposable = vscode.commands.onDidExecuteCommand((e) => {
+                const activeEditor = vscode.window.activeTextEditor;
+                if (!activeEditor)
+                    return;
+                const document = activeEditor.document;
+                this.ensureBuffer(document);
+                const docKey = document.uri.toString();
+                const buffer = this.logBuffers.get(docKey);
                 const timestamp = new Date().toISOString();
                 let logEvent = null;
                 if (e.command === 'undo') {
@@ -159,7 +188,7 @@ class DetailedChangeTracker {
                 }
                 if (logEvent) {
                     console.log(JSON.stringify(logEvent));
-                    this.logBuffer.push(logEvent);
+                    buffer.push(logEvent);
                 }
             });
             this.disposables.push(commandDisposable);
@@ -167,15 +196,14 @@ class DetailedChangeTracker {
         else {
             console.warn("vscode.commands.onDidExecuteCommand not available; UNDO/REDO/CUT events will not be logged.");
         }
-        // Flush the log buffer every 2 seconds to update the report file.
+        // Flush each document's log buffer every 2 seconds to update the report files.
         const flushInterval = setInterval(() => {
-            if (this.logBuffer.length > 0) {
-                console.log("=== Flushing DetailedChangeTracker Logs ===");
-                console.log(JSON.stringify(this.logBuffer, null, 2));
-                const activeEditor = vscode.window.activeTextEditor;
-                if (activeEditor) {
-                    const document = activeEditor.document;
-                    const reportFilePath = this.getReportFilePath(document);
+            for (const [docKey, buffer] of this.logBuffers.entries()) {
+                if (buffer.length > 0) {
+                    // Get the report file path.
+                    const reportFilePath = this.reportFilePaths.get(docKey);
+                    if (!reportFilePath)
+                        continue;
                     let reportData = { logs: [] };
                     if (fs.existsSync(reportFilePath)) {
                         try {
@@ -189,10 +217,8 @@ class DetailedChangeTracker {
                             console.error("Error reading report file:", err);
                         }
                     }
-                    // Push each log event from logBuffer into reportData.logs.
-                    this.logBuffer.forEach(event => {
-                        reportData.logs.push(event);
-                    });
+                    // Append events from the buffer.
+                    reportData.logs.push(...buffer);
                     try {
                         fs.writeFileSync(reportFilePath, JSON.stringify(reportData, null, 2), 'utf8');
                         console.log(`Report updated: ${reportFilePath}`);
@@ -200,8 +226,9 @@ class DetailedChangeTracker {
                     catch (err) {
                         console.error("Error writing report file:", err);
                     }
+                    // Clear the buffer for this document.
+                    buffer.length = 0;
                 }
-                this.logBuffer = [];
             }
         }, 2000);
         this.disposables.push({ dispose: () => clearInterval(flushInterval) });

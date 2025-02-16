@@ -1,0 +1,54 @@
+{
+    "name": "button-extension",
+    "displayName": "Button Extension",
+    "description": "Adds a toggling play/stop button in the editor title area using built-in codicons.",
+    "version": "0.0.1",
+    "publisher": "your-publisher",
+    "engines": {
+      "vscode": "^1.70.0"
+    },
+    "activationEvents": [
+      "onCommand:button.start",
+      "onCommand:button.stop"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "button.start",
+          "title": "Start Recording"
+        },
+        {
+          "command": "button.stop",
+          "title": "Stop Recording"
+        }
+      ],
+      "menus": {
+        "editor/title": [
+          {
+            "command": "button.start",
+            "group": "navigation",
+            "when": "!button.active",
+            "icon": "$(triangle-right)"
+          },
+          {
+            "command": "button.stop",
+            "group": "navigation",
+            "when": "button.active",
+            "icon": "$(debug-stop)"
+          }
+        ]
+      }
+    },
+    "scripts": {
+      "vscode:prepublish": "npm run compile",
+      "compile": "tsc -p ./",
+      "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+      "@types/node": "^18.0.0",
+      "@types/vscode": "^1.97.0",
+      "typescript": "^4.9.5"
+    }
+  }
+  
