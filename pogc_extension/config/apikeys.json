@@ -1,9 +1,0 @@
-{
-    "ethereum": {
-      "apiKey": "YOUR_ETHEREUM_API_KEY"
-    },
-    "aiService": {
-      "apiKey": "YOUR_AI_SERVICE_API_KEY"
-    }
-  }
-  

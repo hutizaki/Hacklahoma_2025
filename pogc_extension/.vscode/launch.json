@@ -1,22 +1,19 @@
-// .vscode/launch.json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      // This configuration runs and debugs your extension
-      "name": "Run Extension",
-      "type": "extensionHost",
-      "request": "launch",
-      "runtimeExecutable": "${execPath}",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
-      // If you're compiling TypeScript into an "out" folder, point to it here
-      "outFiles": [
-        "${workspaceFolder}/out/**/*.js"
-      ],
-      // Pre-launch task to compile TypeScript (if you have a compile script)
-      "preLaunchTask": "npm: compile"
-    }
-  ]
-}
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Extension",
+        "type": "extensionHost",
+        "request": "launch",
+        "runtimeExecutable": "${execPath}",
+        "args": [
+          "--extensionDevelopmentPath=${workspaceFolder}"
+        ],
+        "outFiles": [
+          "${workspaceFolder}/out/**/*.js"
+        ],
+        "preLaunchTask": "npm: compile"
+      }
+    ]
+  }
+  

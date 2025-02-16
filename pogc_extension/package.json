@@ -1,41 +1,64 @@
 {
-  "name": "hacklahoma_2025",
-  "displayName": "Hacklahoma 2025",
-  "version": "0.0.1",
-  "description": "## 🚀 Project Summary Proof-of-Genuine-Code (PoGC) is a **VS Code & Eclipse extension** that prevents AI-assisted cheating by tracking code authorship, detecting AI-generated content, and requiring justifications for flagged sections. The plugin integrates **Ethereum for decentralized verification** and provides a **web-based dashboard** for professors to review reports.",
-  "main": "./out/extension.js",
-  "scripts": {
-    "compile": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hutizaki/Hacklahoma_2025.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hutizaki/Hacklahoma_2025/issues"
-  },
-  "homepage": "https://github.com/hutizaki/Hacklahoma_2025#readme",
-  "engines": {
-    "vscode": "^1.70.0"
-  },
-  "activationEvents": [
-    "*" 
-  ],
-  "categories": [
-    "Other"
-  ],
-  "dependencies": {
-    "@ethersphere/bee-js": "^8.3.1",
-    "ethers": "^6.13.5"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@types/vscode": "^1.97.0",
-    "hardhat": "^2.22.18",
-    "typescript": "^5.7.3"
+    "name": "pogc-extension-minimal",
+    "displayName": "PoGC Extension Minimal",
+    "version": "0.0.1",
+    "description": "A minimal VS Code extension for testing logging, activation, and a toggling start/stop button.",
+    "main": "./out/extension.js",
+    "scripts": {
+      "compile": "tsc",
+      "watch": "tsc --watch"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/yourusername/pogc-extension-minimal.git"
+    },
+    "keywords": [
+      "vscode",
+      "extension",
+      "pogc"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "engines": {
+      "vscode": "^1.70.0"
+    },
+    "activationEvents": [
+      "onCommand:pogc.start",
+      "onCommand:pogc.stop"
+    ],
+    "categories": [
+      "Other"
+    ],
+    "contributes": {
+      "commands": [
+        {
+          "command": "pogc.start",
+          "title": "Start Recording"
+        },
+        {
+          "command": "pogc.stop",
+          "title": "Stop Recording"
+        }
+      ],
+      "menus": {
+        "editor/title": [
+          {
+            "command": "pogc.start",
+            "group": "navigation",
+            "when": "!pogc.active"
+          },
+          {
+            "command": "pogc.stop",
+            "group": "navigation",
+            "when": "pogc.active"
+          }
+        ]
+      }
+    },
+    "devDependencies": {
+      "@types/node": "^18.0.0",
+      "@types/vscode": "^1.97.0",
+      "typescript": "^5.7.3"
+    }
   }
-}
+  
