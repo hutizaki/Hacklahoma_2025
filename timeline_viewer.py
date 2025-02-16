@@ -1,48 +1,76 @@
 # timeline_replay.py
-import sys, json, os, re
+import sys, json, os
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget,
-    QVBoxLayout, QSlider, QTextEdit, QLabel, QFileDialog, QPushButton, QHBoxLayout
+    QApplication, QMainWindow, QWidget, QVBoxLayout,
+    QSlider, QTextEdit, QLabel, QFileDialog, QPushButton
 )
 from PyQt5.QtCore import Qt
 
-def parse_logs(logs):
+def load_events(report_file):
+    """Load structured log events from the JSON report file."""
+    try:
+        with open(report_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("logs", [])
+    except Exception as e:
+        print("Error loading report:", e)
+        return []
+
+def parse_range(range_str):
     """
-    Given a list of log strings, parse each one to extract the inserted text.
-    Returns a list of events: each event is a dict with keys:
-      - timestamp: string
-      - text: the inserted text (if deletion, text is an empty string)
+    Parse a range string formatted as "start-end" and return (start, end) as integers.
+    Assumes a single-line document.
     """
-    events = []
-    pattern = re.compile(r'\[(.*?)\].*Inserted:\s*"([^"]*)"')
-    for log in logs:
-        m = pattern.search(log)
-        if m:
-            timestamp, inserted = m.groups()
-            events.append({
-                "timestamp": timestamp,
-                "inserted": inserted
-            })
-    return events
+    try:
+        start_str, end_str = range_str.split("-")
+        return int(start_str), int(end_str)
+    except Exception as e:
+        print("Error parsing range:", range_str, e)
+        return 0, 0
+
+def apply_event(state, event):
+    """
+    Apply a single event to the current state and return the new state.
+    For multi-line or more complex events, this logic would need to be extended.
+    """
+    etype = event.get("event")
+    # Use range if available. Otherwise, default to position 0.
+    if "range" in event:
+        start, end = parse_range(event["range"])
+    else:
+        start, end = 0, 0
+
+    if etype == "INSERTION":
+        inserted = event.get("inserted", "")
+        new_state = state[:start] + inserted + state[start:]
+        return new_state
+    elif etype == "DELETION":
+        # Remove text from start to end.
+        new_state = state[:start] + state[end:]
+        return new_state
+    elif etype == "OVERWRITE":
+        inserted = event.get("inserted", "")
+        new_state = state[:start] + inserted + state[end:]
+        return new_state
+    # For UNDO, REDO, CUT, or SELECTION events, we can decide to ignore them
+    # for the purpose of text state reconstruction.
+    else:
+        return state
 
 def build_states(events):
     """
-    Replays the events to build a list of text states.
-    For each event in order:
-      - If inserted text is non-empty, append it.
-      - If inserted text is empty, assume deletion: remove one character from the end.
-    Returns a list of states, where state[i] is the text after events[0..i] have been applied.
+    Build a list of text states by applying each event sequentially.
+    We start with an empty string.
+    Only events of type INSERTION, DELETION, or OVERWRITE modify the state.
     """
-    states = []
-    current_text = ""
+    state = ""
+    states = [state]
     for event in events:
-        ins = event["inserted"]
-        if ins == "":
-            # treat empty insertion as deletion of one character, if possible
-            current_text = current_text[:-1] if current_text else ""
-        else:
-            current_text += ins
-        states.append(current_text)
+        etype = event.get("event")
+        if etype in ["INSERTION", "DELETION", "OVERWRITE"]:
+            state = apply_event(state, event)
+        # SELECTION, UNDO, REDO, CUT events are ignored here.
+        states.append(state)
     return states
 
 class TimelineReplayer(QMainWindow):
@@ -50,42 +78,23 @@ class TimelineReplayer(QMainWindow):
         super().__init__()
         self.setWindowTitle("Typing Replay Timeline")
         self.report_file = report_file
-        self.logs = []
-        self.events = []
-        self.states = []
-        self.load_report()
-        self.initUI()
-
-    def load_report(self):
-        if os.path.exists(self.report_file):
-            try:
-                with open(self.report_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    self.logs = data.get("logs", [])
-            except Exception as e:
-                print("Error loading report:", e)
-                self.logs = []
-        else:
-            print(f"Report file {self.report_file} not found.")
-            self.logs = []
-        self.events = parse_logs(self.logs)
+        self.events = load_events(self.report_file)
         self.states = build_states(self.events)
+        self.initUI()
 
     def initUI(self):
         centralWidget = QWidget()
         self.setCentralWidget(centralWidget)
-        mainLayout = QVBoxLayout()
-        centralWidget.setLayout(mainLayout)
+        layout = QVBoxLayout()
+        centralWidget.setLayout(layout)
 
-        # Button to load a different report file
         loadButton = QPushButton("Load Report")
         loadButton.clicked.connect(self.choose_report_file)
-        mainLayout.addWidget(loadButton)
+        layout.addWidget(loadButton)
 
         self.infoLabel = QLabel("Drag the slider to replay the typing session:")
-        mainLayout.addWidget(self.infoLabel)
+        layout.addWidget(self.infoLabel)
 
-        # Timeline slider: its range is based on the number of events
         self.slider = QSlider(Qt.Horizontal)
         if self.states:
             self.slider.setMinimum(0)
@@ -96,12 +105,11 @@ class TimelineReplayer(QMainWindow):
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
         self.slider.valueChanged.connect(self.update_text)
-        mainLayout.addWidget(self.slider)
+        layout.addWidget(self.slider)
 
-        # A text area to display the current replay state (what was typed so far)
         self.textEdit = QTextEdit()
         self.textEdit.setReadOnly(True)
-        mainLayout.addWidget(self.textEdit)
+        layout.addWidget(self.textEdit)
 
         if self.states:
             self.slider.setValue(0)
@@ -116,7 +124,8 @@ class TimelineReplayer(QMainWindow):
                                                   "JSON Files (*.json);;All Files (*)", options=options)
         if fileName:
             self.report_file = fileName
-            self.load_report()
+            self.events = load_events(self.report_file)
+            self.states = build_states(self.events)
             if self.states:
                 self.slider.setMaximum(len(self.states) - 1)
                 self.slider.setValue(0)
@@ -126,14 +135,12 @@ class TimelineReplayer(QMainWindow):
 
     def update_text(self, value):
         if 0 <= value < len(self.states):
-            # Display the state as the replayed text so far.
             self.textEdit.setText(self.states[value])
         else:
             self.textEdit.setText("")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # Default report file path (adjust as needed)
     report_file_path = os.path.join(os.getcwd(), "hello_report.json")
     window = TimelineReplayer(report_file_path)
     window.resize(800, 600)
