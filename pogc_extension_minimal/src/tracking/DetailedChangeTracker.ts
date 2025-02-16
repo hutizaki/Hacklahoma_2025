@@ -4,47 +4,113 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Define a structured log event.
-interface LogEvent {
+export interface LogEvent {
   timestamp: string;
-  event: "INSERTION" | "DELETION" | "OVERWRITE" | "SELECTION" | "UNDO" | "REDO" | "CUT";
-  // For text changes, 'range' is formatted as "start-end" using column indices.
+  event: "INITIAL" | "INSERTION" | "DELETION" | "OVERWRITE" | "SELECTION" | "UNDO" | "REDO" | "CUT";
+  // For text changes, 'range' is formatted as "startLine:startCol-endLine:endCol"
   range?: string;
   inserted?: string;
   deleted?: string;
-  // For selection events, we log a selection string.
+  // For selection events.
   selection?: string;
+  // For INITIAL events, store the full content as an array of objects:
+  // { line: number, range: string, content: string }
+  initialContent?: { line: number, range: string, content: string }[];
 }
 
 export class DetailedChangeTracker {
   private disposables: vscode.Disposable[] = [];
   private logBuffer: LogEvent[] = [];
-  // Track last selection per document to avoid duplicate logs.
-  private lastSelections: Map<string, string> = new Map();
-  // Track last deletion range per document.
-  private lastDeletionRanges: Map<string, string> = new Map();
+  // Cache report file paths per document.
+  private reportFilePaths: Map<string, string> = new Map();
+  // Track whether an INITIAL event has been logged for a document.
+  private initialLogged: Map<string, boolean> = new Map();
 
   constructor() {
     this.initialize();
   }
 
+  // Helper: Determine the next report file path for a document.
+  private getReportFilePath(document: vscode.TextDocument): string {
+    const docKey = document.uri.toString();
+    if (this.reportFilePaths.has(docKey)) {
+      return this.reportFilePaths.get(docKey)!;
+    }
+    const fileDir = path.dirname(document.fileName);
+    const baseName = path.basename(document.fileName, path.extname(document.fileName));
+    let maxSession = 0;
+    try {
+      const files = fs.readdirSync(fileDir);
+      const regex = new RegExp(`^${baseName}_report(\\d+)\\.json$`);
+      files.forEach(file => {
+        const match = file.match(regex);
+        if (match && match[1]) {
+          const num = parseInt(match[1]);
+          if (num > maxSession) {
+            maxSession = num;
+          }
+        }
+      });
+    } catch (err) {
+      console.error("Error reading directory:", err);
+    }
+    const nextSession = maxSession + 1;
+    const reportFileName = `${baseName}_report${nextSession}.json`;
+    const reportFilePath = path.join(fileDir, reportFileName);
+    this.reportFilePaths.set(docKey, reportFilePath);
+    return reportFilePath;
+  }
+
+  // Helper: Format a range as "startLine:startCol-endLine:endCol"
+  private formatRange(range: vscode.Range): string {
+    return `${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
+  }
+
+  // Helper: Log an INITIAL event for a document.
+  private logInitial(document: vscode.TextDocument) {
+    const docKey = document.uri.toString();
+    if (this.initialLogged.get(docKey)) return;
+    const timestamp = new Date().toISOString();
+    const lines = document.getText().split(/\r?\n/);
+    const structuredLines = lines.map((line, idx) => {
+      return {
+        line: idx,
+        range: `${idx}:0-${idx}:${line.length}`,
+        content: line
+      };
+    });
+    const initialEvent: LogEvent = {
+      timestamp,
+      event: "INITIAL",
+      initialContent: structuredLines
+    };
+    console.log("INITIAL EVENT: " + JSON.stringify(initialEvent));
+    this.logBuffer.push(initialEvent);
+    this.initialLogged.set(docKey, true);
+  }
+
   private initialize() {
-    // Helper to format a range as "start-end" (using column indices).
-    const formatRange = (range: vscode.Range): string =>
-      `${range.start.character}-${range.end.character}`;
+    // Log INITIAL for documents as they open.
+    const openDisposable = vscode.workspace.onDidOpenTextDocument((document) => {
+      this.logInitial(document);
+    });
+    this.disposables.push(openDisposable);
+
+    // For already open documents.
+    vscode.workspace.textDocuments.forEach(document => {
+      this.logInitial(document);
+    });
 
     // Listen for text document changes.
     const docChangeDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
       const document = event.document;
       const timestamp = new Date().toISOString();
-      const docKey = document.uri.toString();
 
       event.contentChanges.forEach(change => {
-        let logEvent: LogEvent;
-        const rangeStr = formatRange(change.range);
-        // Check for deletion.
+        let logEvent: LogEvent | null = null;
+        const rangeStr = this.formatRange(change.range);
         if (change.rangeLength > 0 && change.text === "") {
-          // Avoid duplicate deletion logs.
-          if (this.lastDeletionRanges.get(docKey) === rangeStr) return;
+          // DELETION event.
           const deletedText = document.getText(change.range);
           logEvent = {
             timestamp,
@@ -52,10 +118,8 @@ export class DetailedChangeTracker {
             range: rangeStr,
             deleted: deletedText
           };
-          this.lastDeletionRanges.set(docKey, rangeStr);
-        } 
-        // Overwrite: a selection is replaced.
-        else if (change.rangeLength > 0 && change.text.length > 0) {
+        } else if (change.rangeLength > 0 && change.text.length > 0) {
+          // OVERWRITE event.
           const replacedText = document.getText(change.range);
           logEvent = {
             timestamp,
@@ -64,9 +128,8 @@ export class DetailedChangeTracker {
             deleted: replacedText,
             inserted: change.text
           };
-        }
-        // Otherwise, treat as insertion.
-        else {
+        } else {
+          // INSERTION event.
           logEvent = {
             timestamp,
             event: "INSERTION",
@@ -74,8 +137,10 @@ export class DetailedChangeTracker {
             inserted: change.text
           };
         }
-        console.log(JSON.stringify(logEvent));
-        this.logBuffer.push(logEvent);
+        if (logEvent) {
+          console.log(JSON.stringify(logEvent));
+          this.logBuffer.push(logEvent);
+        }
       });
     });
     this.disposables.push(docChangeDisposable);
@@ -84,23 +149,20 @@ export class DetailedChangeTracker {
     const selectionDisposable = vscode.window.onDidChangeTextEditorSelection((event) => {
       const document = event.textEditor.document;
       const timestamp = new Date().toISOString();
-      const docKey = document.uri.toString();
-      const selectionStr = event.selections
-        .map(sel => `${sel.start.character}-${sel.end.character}`)
+      const selections = event.selections
+        .map(sel => `${sel.start.line}:${sel.start.character}-${sel.end.line}:${sel.end.character}`)
         .join(",");
-      if (this.lastSelections.get(docKey) === selectionStr) return;
-      this.lastSelections.set(docKey, selectionStr);
       const logEvent: LogEvent = {
         timestamp,
         event: "SELECTION",
-        selection: selectionStr
+        selection: selections
       };
       console.log(JSON.stringify(logEvent));
       this.logBuffer.push(logEvent);
     });
     this.disposables.push(selectionDisposable);
 
-    // Listen for command execution events (if the proposed API is enabled).
+    // Listen for command execution events (UNDO, REDO, CUT) if available.
     if (typeof (vscode.commands as any).onDidExecuteCommand === 'function') {
       const commandDisposable = (vscode.commands as any).onDidExecuteCommand((e: any) => {
         const timestamp = new Date().toISOString();
@@ -119,10 +181,10 @@ export class DetailedChangeTracker {
       });
       this.disposables.push(commandDisposable);
     } else {
-      console.warn("vscode.commands.onDidExecuteCommand is not available. Undo/Redo/Cut events will not be logged.");
+      console.warn("vscode.commands.onDidExecuteCommand not available; UNDO/REDO/CUT events will not be logged.");
     }
 
-    // Every 2 seconds, flush the logBuffer to the console and update the JSON report.
+    // Flush the log buffer every 2 seconds to update the report file.
     const flushInterval = setInterval(() => {
       if (this.logBuffer.length > 0) {
         console.log("=== Flushing DetailedChangeTracker Logs ===");
@@ -130,20 +192,23 @@ export class DetailedChangeTracker {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
           const document = activeEditor.document;
-          const baseName = path.basename(document.fileName, path.extname(document.fileName));
-          const fileDir = path.dirname(document.fileName);
-          const reportFileName = `${baseName}_report.json`;
-          const reportFilePath = path.join(fileDir, reportFileName);
-          let reportData: { logs: LogEvent[] } = { logs: [] };
+          const reportFilePath = this.getReportFilePath(document);
+          let reportData = { logs: [] as LogEvent[] };
           if (fs.existsSync(reportFilePath)) {
             try {
               const content = fs.readFileSync(reportFilePath, 'utf8');
               reportData = JSON.parse(content);
+              if (!Array.isArray(reportData.logs)) {
+                reportData.logs = [];
+              }
             } catch (err) {
               console.error("Error reading report file:", err);
             }
           }
-          reportData.logs.push(...this.logBuffer);
+          // Push each log event from logBuffer into reportData.logs.
+          this.logBuffer.forEach(event => {
+            reportData.logs.push(event);
+          });
           try {
             fs.writeFileSync(reportFilePath, JSON.stringify(reportData, null, 2), 'utf8');
             console.log(`Report updated: ${reportFilePath}`);
