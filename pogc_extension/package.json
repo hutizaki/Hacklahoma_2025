@@ -1,0 +1,31 @@
+{
+  "name": "hacklahoma_2025",
+  "version": "1.0.0",
+  "description": "## 🚀 Project Summary Proof-of-Genuine-Code (PoGC) is a **VS Code & Eclipse extension** that prevents AI-assisted cheating by tracking code authorship, detecting AI-generated content, and requiring justifications for flagged sections. The plugin integrates **Ethereum for decentralized verification** and provides a **web-based dashboard** for professors to review reports.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hutizaki/Hacklahoma_2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hutizaki/Hacklahoma_2025/issues"
+  },
+  "homepage": "https://github.com/hutizaki/Hacklahoma_2025#readme",
+  "dependencies": {
+    "@ethersphere/bee-js": "^8.3.1",
+    "ethers": "^6.13.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/vscode": "^1.97.0",
+    "hardhat": "^2.22.18",
+    "typescript": "^5.7.3"
+  }
+}
