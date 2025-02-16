@@ -1,0 +1,147 @@
+{
+  "logs": [
+    {
+      "timestamp": "2025-02-16T10:53:48.640Z",
+      "event": "INITIAL",
+      "initialContent": [
+        {
+          "line": 0,
+          "range": "0:0-0:0",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-02-16T10:53:48.717Z",
+      "event": "INITIAL",
+      "initialContent": [
+        {
+          "line": 0,
+          "range": "0:0-0:0",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-02-16T10:53:49.143Z",
+      "event": "INITIAL",
+      "initialContent": [
+        {
+          "line": 0,
+          "range": "0:0-0:0",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.095Z",
+      "event": "INSERTION",
+      "range": "0:0-0:0",
+      "inserted": "G"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.101Z",
+      "event": "SELECTION",
+      "selection": "0:1-0:1"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.323Z",
+      "event": "INSERTION",
+      "range": "0:1-0:1",
+      "inserted": "o"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.325Z",
+      "event": "SELECTION",
+      "selection": "0:2-0:2"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.459Z",
+      "event": "INSERTION",
+      "range": "0:2-0:2",
+      "inserted": "o"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:51.461Z",
+      "event": "SELECTION",
+      "selection": "0:3-0:3"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.088Z",
+      "event": "INSERTION",
+      "range": "0:3-0:3",
+      "inserted": "d"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.089Z",
+      "event": "SELECTION",
+      "selection": "0:4-0:4"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.224Z",
+      "event": "INSERTION",
+      "range": "0:4-0:4",
+      "inserted": "b"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.225Z",
+      "event": "SELECTION",
+      "selection": "0:5-0:5"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.355Z",
+      "event": "INSERTION",
+      "range": "0:5-0:5",
+      "inserted": "y"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.357Z",
+      "event": "SELECTION",
+      "selection": "0:6-0:6"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.493Z",
+      "event": "INSERTION",
+      "range": "0:6-0:6",
+      "inserted": "e"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.494Z",
+      "event": "SELECTION",
+      "selection": "0:7-0:7"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.957Z",
+      "event": "INSERTION",
+      "range": "0:7-0:7",
+      "inserted": " "
+    },
+    {
+      "timestamp": "2025-02-16T10:53:52.959Z",
+      "event": "SELECTION",
+      "selection": "0:8-0:8"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:53.950Z",
+      "event": "INSERTION",
+      "range": "0:8-0:8",
+      "inserted": "g"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:53.952Z",
+      "event": "SELECTION",
+      "selection": "0:9-0:9"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:54.035Z",
+      "event": "INSERTION",
+      "range": "0:9-0:9",
+      "inserted": "n"
+    },
+    {
+      "timestamp": "2025-02-16T10:53:54.037Z",
+      "event": "SELECTION",
+      "selection": "0:10-0:10"
+    }
+  ]
+}
